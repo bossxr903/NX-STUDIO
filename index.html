@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TNX Tools | Ultimate Web Toolkit</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #f4f7fe; color: #1e293b; overflow-x: hidden; }
+        
+        /* Premium Glass & 3D Effects */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .tool-card {
+            background: #ffffff;
+            border-radius: 20px;
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+            border-color: rgba(99, 102, 241, 0.3);
+            z-index: 10;
+        }
+
+        .icon-box {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover .icon-box {
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .ambient-blob {
+            position: absolute; width: 400px; height: 400px; border-radius: 50%;
+            filter: blur(80px); opacity: 0.4; z-index: -1; pointer-events: none;
+        }
+
+        /* Syntax Highlighter Scrollbar */
+        pre::-webkit-scrollbar { height: 8px; width: 8px;}
+        pre::-webkit-scrollbar-track { background: #1e293b; border-radius: 8px; }
+        pre::-webkit-scrollbar-thumb { background: #475569; border-radius: 8px; }
+        pre::-webkit-scrollbar-thumb:hover { background: #64748b; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative">
+
+    <div class="ambient-blob bg-indigo-200 top-[-100px] left-[-100px]"></div>
+    <div class="ambient-blob bg-cyan-200 bottom-[10%] right-[-100px]"></div>
+
+    <!-- ==================== NAVIGATION ==================== -->
+    <nav class="glass-nav sticky top-0 z-50 shadow-sm">
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-18 py-3 items-center">
+                <!-- Logo -->
+                <div class="flex items-center cursor-pointer" onclick="switchView('dashboard')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-indigo-200 mr-3">
+                        <i data-lucide="layers" class="text-white w-6 h-6"></i>
+                    </div>
+                    <span class="font-extrabold text-2xl tracking-tight text-slate-800">TNX<span class="gradient-text ml-1">Tools</span></span>
+                </div>
+                
+                <!-- Navbar Actions -->
+                <div class="flex items-center space-x-4">
+                    <button id="btn-admin" onclick="switchView('admin')" class="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-xl shadow-slate-200 transition-all transform hover:-translate-y-0.5">
+                        <i data-lucide="terminal" class="w-4 h-4"></i> Tool Generator
+                    </button>
+                    <button id="btn-home" onclick="switchView('dashboard')" class="hidden flex items-center gap-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all">
+                        <i data-lucide="home" class="w-4 h-4"></i> Back to Home
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==================== VIEW 1: MAIN DASHBOARD ==================== -->
+    <div id="view-dashboard" class="flex-grow flex max-w-[1400px] mx-auto w-full relative">
+        <main class="flex-1 overflow-y-auto p-4 sm:p-8 lg:p-10 relative w-full">
+            
+            <!-- Grid View -->
+            <div id="workspace-grid" class="max-w-6xl mx-auto">
+                <div class="mb-10 text-center lg:text-left">
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-3">Welcome to your <span class="gradient-text">Workspace</span></h1>
+                    <p class="text-slate-500 text-lg">A premium collection of developer & design utilities.</p>
+                </div>
+                <div id="tools-grid-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Cards will be injected here from hardcoded array -->
+                </div>
+            </div>
+
+            <!-- Active Tool View -->
+            <div id="workspace-active" class="hidden max-w-4xl mx-auto">
+                <button onclick="hideTool()" class="mb-6 flex items-center text-sm font-semibold text-slate-500 hover:text-indigo-600 transition-colors group">
+                    <div class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center mr-3 group-hover:border-indigo-200 group-hover:bg-indigo-50 transition-all">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    </div>
+                    Back to Collection
+                </button>
+
+                <div class="bg-white rounded-[24px] shadow-xl shadow-slate-200/40 border border-slate-100 p-6 sm:p-10 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500"></div>
+                    <div class="flex items-start gap-5 border-b border-slate-100 pb-6 mb-8">
+                        <div id="active-tool-icon" class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0 border border-indigo-100"></div>
+                        <div>
+                            <h2 id="active-tool-title" class="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight"></h2>
+                            <p id="active-tool-desc" class="text-slate-500 mt-2 text-sm sm:text-base"></p>
+                        </div>
+                    </div>
+                    <div id="active-tool-content" class="min-h-[300px]"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== VIEW 2: CODE GENERATOR (ADMIN) ==================== -->
+    <div id="view-admin" class="hidden flex-grow max-w-7xl mx-auto w-full p-4 sm:p-8 relative">
+        
+        <div class="mb-8 border-b border-slate-200 pb-5">
+            <h1 class="text-3xl font-extrabold text-slate-900">Tool Code Generator</h1>
+            <p class="text-slate-500 mt-2">Fill the details to generate hardcoded JS object for your new tool.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- LEFT: INPUT FORM -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center">
+                    <i data-lucide="edit-3" class="w-5 h-5 mr-2 text-indigo-600"></i> Tool Details
+                </h2>
+                
+                <form id="generator-form" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Tool ID</label>
+                            <input type="text" id="gen-id" placeholder="e.g. shadow-gen" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Tool Name</label>
+                            <input type="text" id="gen-name" placeholder="e.g. Soft Shadow" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Icon Name (Lucide)</label>
+                        <input type="text" id="gen-icon" placeholder="e.g. box, palette, type" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Description</label>
+                        <input type="text" id="gen-desc" placeholder="What does this tool do?" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">HTML Content</label>
+                        <textarea id="gen-html" rows="5" placeholder="<div class='p-4'>Hello World</div>" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none font-mono text-sm"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">JS Logic (Optional)</label>
+                        <textarea id="gen-js" rows="4" placeholder="window.myFunc = function() { ... }" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none font-mono text-sm"></textarea>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-100">
+                        <button type="button" onclick="generateCode()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-indigo-200">
+                            Generate Code
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- RIGHT: GENERATED CODE DISPLAY -->
+            <div class="bg-slate-900 rounded-2xl shadow-xl border border-slate-700 p-6 flex flex-col h-full">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-white flex items-center">
+                        <i data-lucide="code" class="w-5 h-5 mr-2 text-cyan-400"></i> Generated JS Object
+                    </h2>
+                    <button onclick="copyGeneratedCode()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-sm font-semibold transition flex items-center border border-slate-600">
+                        <i data-lucide="copy" class="w-4 h-4 mr-2"></i> Copy Code
+                    </button>
+                </div>
+                
+                <div class="flex-grow bg-slate-950 rounded-xl p-4 overflow-hidden relative">
+                    <pre id="output-code" class="text-emerald-400 font-mono text-sm h-full overflow-y-auto whitespace-pre-wrap word-break">
+// Fill the form and click "Generate Code"
+// The hardcoded object will appear here.
+// Then paste it inside your DEFAULT_TOOLS array!
+                    </pre>
+                </div>
+                <p id="copy-msg" class="text-cyan-400 text-sm mt-3 text-center hidden">Copied to clipboard!</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT & DATABASE ==================== -->
+    <script>
+        // 🚀 EKHANE APNAR SOB TOOL GULO HARDCODE KORA THAKBE 🚀
+        // Tumi jokhon notun tool banabe, Generator theke code copy kore just ei array er vitor paste korbe!
+        const DEFAULT_TOOLS = [
+            {
+                id: 'css-shadow',
+                name: 'Soft Shadow Gen',
+                icon: 'box',
+                description: 'Generate beautiful, smooth 10015.io style box-shadows.',
+                htmlContent: `
+                    <div class="text-center py-10">
+                        <div class="w-32 h-32 mx-auto bg-white rounded-2xl mb-8 border border-slate-100" style="box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);"></div>
+                        <p class="text-slate-400">Click Admin Panel to add your own real tools!</p>
+                    </div>`,
+                jsLogic: ``
+            },
+            {
+                id: 'text-tools',
+                name: 'Text Utilities',
+                icon: 'type',
+                description: 'Convert case, count words, and format your text blocks instantly.',
+                htmlContent: `<div class="p-8 text-center text-slate-400 border-2 border-dashed border-slate-200 rounded-2xl">Text Tools Interface</div>`,
+                jsLogic: ``
+            },
+            {
+                id: 'color-picker',
+                name: 'Color Palette',
+                icon: 'palette',
+                description: 'Pick amazing colors for your next UI project.',
+                htmlContent: `
+                    <div class="p-8 text-center bg-slate-50 rounded-xl">
+                        <input type="color" id="myColor" class="w-20 h-20 cursor-pointer rounded-lg mb-4" onchange="changeColor()">
+                        <p id="colorVal" class="text-2xl font-bold font-mono text-slate-700">#000000</p>
+                    </div>
+                `,
+                jsLogic: `
+                    window.changeColor = function() {
+                        let color = document.getElementById("myColor").value;
+                        document.getElementById("colorVal").innerText = color.toUpperCase();
+                    }
+                `
+            }
+            // 👉 NOTUN TOOL ER CODE EKHANE PASTE KORBE!
+        ];
+
+        // ==========================================
+        // 1. DASHBOARD RENDER LOGIC
+        // ==========================================
+        function renderMainGrid() {
+            const gridContainer = document.getElementById('tools-grid-container');
+            gridContainer.innerHTML = '';
+
+            DEFAULT_TOOLS.forEach(tool => {
+                const card = document.createElement('div');
+                card.className = 'tool-card cursor-pointer group flex flex-col p-6 h-full';
+                card.onclick = () => showTool(tool.id);
+                card.innerHTML = `
+                    <div class="icon-box w-14 h-14 rounded-2xl flex items-center justify-center text-indigo-600 mb-5 border border-slate-100">
+                        <i data-lucide="${tool.icon}" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">${tool.name}</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed flex-grow">${tool.description}</p>
+                    <div class="mt-6 flex items-center text-sm font-semibold text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0">
+                        Open Tool <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </div>
+                `;
+                gridContainer.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function showTool(toolId) {
+            const tool = DEFAULT_TOOLS.find(t => t.id === toolId);
+            if(!tool) return;
+
+            document.getElementById('workspace-grid').classList.add('hidden');
+            document.getElementById('workspace-active').classList.remove('hidden');
+
+            document.getElementById('active-tool-icon').innerHTML = `<i data-lucide="${tool.icon}" class="w-8 h-8"></i>`;
+            document.getElementById('active-tool-title').innerText = tool.name;
+            document.getElementById('active-tool-desc').innerText = tool.description;
+            document.getElementById('active-tool-content').innerHTML = tool.htmlContent;
+
+            if(tool.jsLogic) {
+                try {
+                    const initFunc = new Function(tool.jsLogic);
+                    initFunc();
+                } catch(err) { console.error("Error running tool JS:", err); }
+            }
+            lucide.createIcons();
+        }
+
+        function hideTool() {
+            document.getElementById('workspace-grid').classList.remove('hidden');
+            document.getElementById('workspace-active').classList.add('hidden');
+        }
+
+        // ==========================================
+        // 2. VIEW SWITCHER (ROUTER)
+        // ==========================================
+        function switchView(view) {
+            const dashView = document.getElementById('view-dashboard');
+            const adminView = document.getElementById('view-admin');
+            const btnAdmin = document.getElementById('btn-admin');
+            const btnHome = document.getElementById('btn-home');
+            
+            if (view === 'dashboard') {
+                dashView.classList.remove('hidden');
+                adminView.classList.add('hidden');
+                btnAdmin.classList.remove('hidden');
+                btnHome.classList.add('hidden');
+                hideTool(); 
+            } else {
+                dashView.classList.add('hidden');
+                adminView.classList.remove('hidden');
+                btnAdmin.classList.add('hidden');
+                btnHome.classList.remove('hidden');
+            }
+            window.scrollTo(0, 0);
+        }
+
+        // ==========================================
+        // 3. SMART CODE GENERATOR LOGIC
+        // ==========================================
+        let currentGeneratedStr = "";
+
+        function generateCode() {
+            const id = document.getElementById('gen-id').value.trim() || 'new-tool';
+            const name = document.getElementById('gen-name').value.trim() || 'New Tool';
+            const icon = document.getElementById('gen-icon').value.trim() || 'zap';
+            const desc = document.getElementById('gen-desc').value.trim() || 'A cool tool.';
+            
+            // Handle HTML backticks
+            let html = document.getElementById('gen-html').value.trim();
+            html = html.replace(/\`/g, '\\`'); // escape backticks jate template literal e jhamela na hoy
+            
+            let js = document.getElementById('gen-js').value.trim();
+            js = js.replace(/\`/g, '\\`');
+
+            // Constructing the final string
+            currentGeneratedStr = `{
+    id: '${id}',
+    name: '${name}',
+    icon: '${icon}',
+    description: '${desc}',
+    htmlContent: \`
+        ${html}
+    \`,
+    jsLogic: \`
+        ${js}
+    \`
+},`;
+
+            document.getElementById('output-code').innerText = currentGeneratedStr;
+        }
+
+        function copyGeneratedCode() {
+            if(!currentGeneratedStr) return;
+            
+            navigator.clipboard.writeText(currentGeneratedStr).then(() => {
+                const msg = document.getElementById('copy-msg');
+                msg.classList.remove('hidden');
+                setTimeout(() => { msg.classList.add('hidden'); }, 2000);
+            }).catch(err => {
+                // Fallback for older browsers or iframe restrictions
+                const textArea = document.createElement("textarea");
+                textArea.value = currentGeneratedStr;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    const msg = document.getElementById('copy-msg');
+                    msg.classList.remove('hidden');
+                    setTimeout(() => { msg.classList.add('hidden'); }, 2000);
+                } catch (err) {
+                    alert("Copy failed! Please copy manually from the black box.");
+                }
+                document.body.removeChild(textArea);
+            });
+        }
+
+        // Init App
+        window.onload = () => {
+            renderMainGrid();
+        };
+    </script>
+</body>
+</html>
